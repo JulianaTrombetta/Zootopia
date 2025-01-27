@@ -8,20 +8,25 @@ def load_data(file_path):
         return json.load(handle)
 
 
-# Function to generate a string with the animals' data
+# Function to generate a string with the animals' data as styled HTML list items
 def generate_animals_info(animals_data):
-    """Generates a formatted string with animal information."""
+    """Generates a formatted string with animal information as styled HTML list items."""
     output = ''
     for animal in animals_data:
-        if 'name' in animal:
-            output += f"Name: {animal['name']}<br>\n"
-        if 'diet' in animal:
-            output += f"Diet: {animal['diet']}<br>\n"
-        if 'locations' in animal and animal['locations']:
-            output += f"Location: {animal['locations'][0]}<br>\n"
-        if 'type' in animal:
-            output += f"Type: {animal['type']}<br>\n"
-        output += "<br>\n"  # Add a blank line between animals
+        output += '<li class="cards__item">\n'
+        output += f'  <div class="card__title">{animal.get("name", "Unknown")}</div>\n'
+        output += '  <p class="card__text">\n'
+        # Access fields with nested handling
+        diet = animal.get("characteristics", {}).get("diet", "Unknown")
+        animal_type = animal.get("characteristics", {}).get("type", "Unknown")
+        location = animal["locations"][0] if "locations" in animal and animal["locations"] else "Unknown"
+
+        # Add details to the output
+        output += f'    <strong>Diet:</strong> {diet}<br/>\n'
+        output += f'    <strong>Location:</strong> {location}<br/>\n'
+        output += f'    <strong>Type:</strong> {animal_type}<br/>\n'
+        output += '  </p>\n'
+        output += '</li>\n'  # Close the list item
     return output
 
 
@@ -32,16 +37,8 @@ def generate_html(template_path, output_path, animals_info):
     with open(template_path, "r") as template_file:
         template_content = template_file.read()
 
-    # Debug: Print the template content
-    print("Template Content:")
-    print(template_content)
-
     # Replace the placeholder with the animals' information
     updated_content = template_content.replace("__REPLACE_ANIMALS_INFO__", animals_info)
-
-    # Debug: Print the updated content
-    print("Updated HTML Content:")
-    print(updated_content)
 
     # Write the updated content to the new HTML file
     with open(output_path, "w") as output_file:
@@ -53,12 +50,24 @@ if __name__ == "__main__":
     # Load the animal data
     animals_data = load_data("animals_data.json")
 
-    # Generate the animals' information string
+    # Debug: Print the loaded JSON data structure
+    print("Loaded JSON Data:")
+    print(json.dumps(animals_data, indent=4))
+
+    # Generate the animals' information string as styled HTML list items
     animals_info = generate_animals_info(animals_data)
-    print("Generated Animals Info:")
-    print(animals_info)  # Debug: Print the generated animals' information
+    print("Generated Animals Info as HTML:")
+    print(animals_info)  # Debug: Print the generated HTML for animals
 
     # Generate the updated HTML file
     generate_html("animals_template.html", "animals.html", animals_info)
 
     print("HTML file 'animals.html' has been generated successfully.")
+
+
+
+
+
+
+
+
