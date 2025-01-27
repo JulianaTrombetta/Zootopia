@@ -8,26 +8,57 @@ def load_data(file_path):
         return json.load(handle)
 
 
-# Function to print animal data
-def print_animal_data(animals_data):
-    """Prints the specified fields for each animal."""
+# Function to generate a string with the animals' data
+def generate_animals_info(animals_data):
+    """Generates a formatted string with animal information."""
+    output = ''
     for animal in animals_data:
-        # Print the required fields if they exist
         if 'name' in animal:
-            print(f"Name: {animal['name']}")
+            output += f"Name: {animal['name']}<br>\n"
         if 'diet' in animal:
-            print(f"Diet: {animal['diet']}")
+            output += f"Diet: {animal['diet']}<br>\n"
         if 'locations' in animal and animal['locations']:
-            print(f"Location: {animal['locations'][0]}")
+            output += f"Location: {animal['locations'][0]}<br>\n"
         if 'type' in animal:
-            print(f"Type: {animal['type']}")
-        print()  # Blank line between animals for readability
+            output += f"Type: {animal['type']}<br>\n"
+        output += "<br>\n"  # Add a blank line between animals
+    return output
+
+
+# Function to generate HTML content
+def generate_html(template_path, output_path, animals_info):
+    """Replaces the placeholder in the HTML template with the animals' information."""
+    # Read the HTML template
+    with open(template_path, "r") as template_file:
+        template_content = template_file.read()
+
+    # Debug: Print the template content
+    print("Template Content:")
+    print(template_content)
+
+    # Replace the placeholder with the animals' information
+    updated_content = template_content.replace("__REPLACE_ANIMALS_INFO__", animals_info)
+
+    # Debug: Print the updated content
+    print("Updated HTML Content:")
+    print(updated_content)
+
+    # Write the updated content to the new HTML file
+    with open(output_path, "w") as output_file:
+        output_file.write(updated_content)
 
 
 # Main script execution
 if __name__ == "__main__":
-    # Load the data from the JSON file
+    # Load the animal data
     animals_data = load_data("animals_data.json")
 
-    # Print the animal data
-    print_animal_data(animals_data)
+    # Generate the animals' information string
+    animals_info = generate_animals_info(animals_data)
+    print("Generated Animals Info:")
+    print(animals_info)  # Debug: Print the generated animals' information
+
+    # Generate the updated HTML file
+    generate_html("animals_template.html", "animals.html", animals_info)
+
+    print("HTML file 'animals.html' has been generated successfully.")
