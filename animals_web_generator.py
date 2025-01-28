@@ -8,25 +8,28 @@ def load_data(file_path):
         return json.load(handle)
 
 
+# Function to serialize a single animal into HTML
+def serialize_animal(animal_obj):
+    """Serializes a single animal object into an HTML list item."""
+    output = '<li class="cards__item">\n'
+    output += f'  <div class="card__title">{animal_obj.get("name", "Unknown")}</div>\n'
+    output += '  <p class="card__text">\n'
+    # Access nested fields for diet and type
+    characteristics = animal_obj.get("characteristics", {})
+    output += f'    <strong>Diet:</strong> {characteristics.get("diet", "Unknown")}<br/>\n'
+    output += f'    <strong>Location:</strong> {animal_obj["locations"][0] if "locations" in animal_obj and animal_obj["locations"] else "Unknown"}<br/>\n'
+    output += f'    <strong>Type:</strong> {characteristics.get("type", "Unknown")}<br/>\n'
+    output += '  </p>\n'
+    output += '</li>\n'
+    return output
+
+
 # Function to generate a string with the animals' data as styled HTML list items
 def generate_animals_info(animals_data):
-    """Generates a formatted string with animal information as styled HTML list items."""
+    """Generates a formatted string with all animals serialized into HTML list items."""
     output = ''
     for animal in animals_data:
-        output += '<li class="cards__item">\n'
-        output += f'  <div class="card__title">{animal.get("name", "Unknown")}</div>\n'
-        output += '  <p class="card__text">\n'
-        # Access fields with nested handling
-        diet = animal.get("characteristics", {}).get("diet", "Unknown")
-        animal_type = animal.get("characteristics", {}).get("type", "Unknown")
-        location = animal["locations"][0] if "locations" in animal and animal["locations"] else "Unknown"
-
-        # Add details to the output
-        output += f'    <strong>Diet:</strong> {diet}<br/>\n'
-        output += f'    <strong>Location:</strong> {location}<br/>\n'
-        output += f'    <strong>Type:</strong> {animal_type}<br/>\n'
-        output += '  </p>\n'
-        output += '</li>\n'  # Close the list item
+        output += serialize_animal(animal)
     return output
 
 
@@ -63,11 +66,3 @@ if __name__ == "__main__":
     generate_html("animals_template.html", "animals.html", animals_info)
 
     print("HTML file 'animals.html' has been generated successfully.")
-
-
-
-
-
-
-
-
